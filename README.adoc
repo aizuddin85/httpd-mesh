@@ -2,6 +2,7 @@ WARNING: Ensure service port properly label or envoy protocol selection. https:/
 
 
 === Certificate creation.
+
 . openssl req -x509 -sha256 -nodes -days 365 -newkey rsa:2048 -subj '/O=Bytewise Malaysia/CN=bytewise.my' -keyout bytewise.my.key -out bytewise.my.crt
 
 . openssl req -out httpd-mesh-secure.apps.ocp4.local.bytewise.my.csr -newkey rsa:2048 -nodes -keyout httpd-mesh-secure.apps.ocp4.local.bytewise.my.key -subj "/CN=httpd-mesh-secure.apps.ocp4.local.bytewise.my/O=Bytewise Malaysia"
@@ -9,3 +10,14 @@ WARNING: Ensure service port properly label or envoy protocol selection. https:/
 . openssl x509 -req -days 365 -CA  bytewise.my.crt -CAkey bytewise.my.key -set_serial 0 -in httpd-mesh-secure.apps.ocp4.local.bytewise.my.csr -out httpd-mesh-secure.apps.ocp4.local.bytewise.my.crt
 
 . oc create -n istio-system secret tls istio-ingressgateway-certs --key httpd-mesh-secure.apps.ocp4.local.bytewise.my.key --cert httpd-mesh-secure.apps.ocp4.local.bytewise.my.crt
+
+
+===
+
+. Run s2i build using https://github.com/openshift/httpd-ex.git.
+
+. Deploy `httpd-mesh-deploymentconfig.yaml`
+
+. Create service `httpd-mesh-svc.yaml`
+
+. Create Gateway/VS for both secure and non-secure `httpd-mesh-secure-gateway.yaml` and `httpd-mesh-gateway.yaml`.
