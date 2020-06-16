@@ -1,11 +1,11 @@
 WARNING: Ensure service port properly label or envoy protocol selection. https://istio.io/latest/docs/ops/configuration/traffic-management/protocol-selection/.
 
 
-= Certificate creation.
-openssl req -x509 -sha256 -nodes -days 365 -newkey rsa:2048 -subj '/O=Bytewise Malaysia/CN=bytewise.my' -keyout bytewise.my.key -out bytewise.my.crt
+=== Certificate creation.
+. openssl req -x509 -sha256 -nodes -days 365 -newkey rsa:2048 -subj '/O=Bytewise Malaysia/CN=bytewise.my' -keyout bytewise.my.key -out bytewise.my.crt
 
-openssl req -out httpd-mesh-secure.apps.ocp4.local.bytewise.my.csr -newkey rsa:2048 -nodes -keyout httpd-mesh-secure.apps.ocp4.local.bytewise.my.key -subj "/CN=httpd-mesh-secure.apps.ocp4.local.bytewise.my/O=Bytewise Malaysia"
+. openssl req -out httpd-mesh-secure.apps.ocp4.local.bytewise.my.csr -newkey rsa:2048 -nodes -keyout httpd-mesh-secure.apps.ocp4.local.bytewise.my.key -subj "/CN=httpd-mesh-secure.apps.ocp4.local.bytewise.my/O=Bytewise Malaysia"
+ 
+. openssl x509 -req -days 365 -CA  bytewise.my.crt -CAkey bytewise.my.key -set_serial 0 -in httpd-mesh-secure.apps.ocp4.local.bytewise.my.csr -out httpd-mesh-secure.apps.ocp4.local.bytewise.my.crt
 
-openssl x509 -req -days 365 -CA  bytewise.my.crt -CAkey bytewise.my.key -set_serial 0 -in httpd-mesh-secure.apps.ocp4.local.bytewise.my.csr -out httpd-mesh-secure.apps.ocp4.local.bytewise.my.crt
-
-oc create -n istio-system secret tls istio-ingressgateway-certs --key httpd-mesh-secure.apps.ocp4.local.bytewise.my.key --cert httpd-mesh-secure.apps.ocp4.local.bytewise.my.crt
+. oc create -n istio-system secret tls istio-ingressgateway-certs --key httpd-mesh-secure.apps.ocp4.local.bytewise.my.key --cert httpd-mesh-secure.apps.ocp4.local.bytewise.my.crt
