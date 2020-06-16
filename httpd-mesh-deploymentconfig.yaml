@@ -1,0 +1,62 @@
+apiVersion: apps.openshift.io/v1
+kind: DeploymentConfig
+metadata:
+  labels:
+    app: httpd-mesh-app-v1
+  name: httpd-mesh-app-v1
+  namespace: httpd-mesh
+spec:
+  replicas: 1
+  revisionHistoryLimit: 10
+  selector:
+    deploymentconfig: httpd-mesh-app-v1
+  strategy:
+    activeDeadlineSeconds: 21600
+    resources: {}
+    rollingParams:
+      intervalSeconds: 1
+      maxSurge: 25%
+      maxUnavailable: 25%
+      timeoutSeconds: 600
+      updatePeriodSeconds: 1
+    type: Rolling
+  template:
+    metadata:
+      annotations:
+        sidecar.istio.io/inject: "true"
+      labels:
+        deploymentconfig: httpd-mesh-app-v1
+        app: httpd-mesh-app
+        version: v1
+    spec:
+      containers:
+      - image: image-registry.openshift-image-registry.svc:5000/httpd-mesh/httpd-pzsc-app@sha256:b6be131386dc390aa542362d47487779bea06dec3ade102521cae810de115b65
+        imagePullPolicy: Always
+        name: httpd-mesh-app
+        ports:
+        - containerPort: 8080
+          protocol: TCP
+        - containerPort: 8443
+          protocol: TCP
+        resources: {}
+        terminationMessagePath: /dev/termination-log
+        terminationMessagePolicy: File
+      dnsPolicy: ClusterFirst
+      restartPolicy: Always
+      schedulerName: default-scheduler
+      securityContext: {}
+      terminationGracePeriodSeconds: 30
+  test: false
+  triggers:
+  - type: ConfigChange
+  - imageChangeParams:
+      automatic: true
+      containerNames:
+      - httpd-mesh-app
+      from:
+        kind: ImageStreamTag
+        name: httpd-pzsc-app:latest
+        namespace: httpd-mesh
+      lastTriggeredImage: image-registry.openshift-image-registry.svc:5000/httpd-mesh/httpd-pzsc-app@sha256:b6be131386dc390aa542362d47487779bea06dec3ade102521cae810de115b65
+    type: ImageChange
+status: {}

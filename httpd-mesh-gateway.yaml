@@ -1,0 +1,33 @@
+apiVersion: networking.istio.io/v1alpha3
+kind: Gateway
+metadata:
+  name: httpd-mesh-gateway
+spec:
+  selector:
+    istio: ingressgateway # use istio default controller
+  servers:
+  - port:
+      number: 80
+      name: http
+      protocol: HTTP
+    hosts:
+    - "httpd-mesh.apps.ocp4.local.bytewise.my"
+---
+apiVersion: networking.istio.io/v1alpha3
+kind: VirtualService
+metadata:
+  name: httpd-mesh-vs
+spec:
+  hosts:
+  - "httpd-mesh.apps.ocp4.local.bytewise.my"
+  gateways:
+  - httpd-mesh-gateway
+  http:
+  - match:
+    - uri:
+        exact: /
+    route:
+    - destination:
+        host: httpd-mesh
+        port:
+          number: 8080
